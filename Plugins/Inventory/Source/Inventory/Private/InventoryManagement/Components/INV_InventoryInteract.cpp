@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Player/INV_PlayerController.h"
+#include "InventoryManagement/Components/INV_InventoryInteract.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -12,36 +12,23 @@
 #include "Widgets/HUD/INV_HUDWidget.h"
 
 
-AINV_PlayerController::AINV_PlayerController()
+UINV_InventoryInteract::UINV_InventoryInteract()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	
+	PrimaryComponentTick.bCanEverTick = true;
 	TraceLength = 500.0f;
 	TraceChannel = ECC_GameTraceChannel1;
+
 }
 
-void AINV_PlayerController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	TraceForItem();
-}
 
-void AINV_PlayerController::ToggleInventory()
-{
-	if (!InventoryComponent.IsValid())
-	{	
-		return;
-	}
-	InventoryComponent->ToggleInventoryMenu();
-
-	
-}
-
-void AINV_PlayerController::BeginPlay()
+// Called when the game starts
+void UINV_InventoryInteract::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	OwningPlayerController = Cast<APlayerController>(GetOwner());
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = 
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(OwningPlayerController->GetLocalPlayer());
 
 	if(IsValid(Subsystem))
 	{
@@ -51,56 +38,78 @@ void AINV_PlayerController::BeginPlay()
 		}
 	}
 
-	InventoryComponent = FindComponentByClass<UINV_InventoryComponent>();
+	SetupInputComponent();
+
+	InventoryComponent = OwningPlayerController->FindComponentByClass<UINV_InventoryComponent>();
 	CreateHUDWidget();
 }
 
-void AINV_PlayerController::SetupInputComponent()
+void UINV_InventoryInteract::TickComponent(float DeltaTime, ELevelTick TickType,
+										   FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::SetupInputComponent();
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	TraceForItem();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+}
+
+void UINV_InventoryInteract::SetupInputComponent()
+{
+	UEnhancedInputComponent* EnhancedInputComponent =
+		CastChecked<UEnhancedInputComponent>(OwningPlayerController->InputComponent);
 
 	EnhancedInputComponent->BindAction(PrimaryInteractAction,
 		ETriggerEvent::Started,
 		this,
-		&AINV_PlayerController::PrimaryInteract
+		&UINV_InventoryInteract::PrimaryInteract
 		);
 
 	EnhancedInputComponent->BindAction(ToggleInventoryAction,
 		ETriggerEvent::Started,
 		this,
-		&AINV_PlayerController::ToggleInventory
+		&UINV_InventoryInteract::ToggleInventory
 		);
+	
 }
 
-void AINV_PlayerController::PrimaryInteract()
+void UINV_InventoryInteract::PrimaryInteract()
 {
 	UE_LOG(LogTemp, Display, TEXT("Primary Interact"));
 }
 
-void AINV_PlayerController::CreateHUDWidget()
+void UINV_InventoryInteract::CreateHUDWidget()
 {
-	if (!IsLocalController()) return;
+	if (!OwningPlayerController->IsLocalController()) return;
 
-	HUDWidget = CreateWidget<UINV_HUDWidget>(this, HUDWidgetClass);
+	HUDWidget = CreateWidget<UINV_HUDWidget>(OwningPlayerController.Get(), HUDWidgetClass);
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->AddToViewport();
 	}
+	
 }
 
-void AINV_PlayerController::TraceForItem()
+void UINV_InventoryInteract::ToggleInventory()
+{
+	if (!InventoryComponent.IsValid())
+	{	
+		UE_LOG(LogTemp, Warning, TEXT("ToggleInventory not working, Inventory Component Invalid"));
+		return;
+	}
+	InventoryComponent->ToggleInventoryMenu();
+}
+
+void UINV_InventoryInteract::TraceForItem()
 {
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
-	
+
 	FVector2D ViewportSize = FVector2D::ZeroVector;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 	const FVector2D ViewportCenter = ViewportSize / 2.f;
 	FVector TraceStart;
 	FVector Forward;
 
-	if(!UGameplayStatics::DeprojectScreenToWorld(this, ViewportCenter, TraceStart, Forward)) return;
+	if(!UGameplayStatics::DeprojectScreenToWorld(OwningPlayerController.Get(), ViewportCenter,
+		TraceStart, Forward)) return;
 	const FVector TraceEnd = TraceStart + Forward * TraceLength;
 
 	FHitResult HitResult;
@@ -138,6 +147,4 @@ void AINV_PlayerController::TraceForItem()
 			IINV_Highlightable::Execute_UnHighlight(HighLightable);
 		}
 	}
-
-	
 }

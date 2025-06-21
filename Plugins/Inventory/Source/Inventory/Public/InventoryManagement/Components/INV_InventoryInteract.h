@@ -3,36 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
-#include "INV_PlayerController.generated.h"
+#include "Components/ActorComponent.h"
+#include "INV_InventoryInteract.generated.h"
 
-class UINV_InventoryComponent;
+
 class UINV_HUDWidget;
 class UInputAction;
 class UInputMappingContext;
-/**
- * 
- */
-UCLASS()
-class INVENTORY_API AINV_PlayerController : public APlayerController
+class UINV_InventoryComponent;
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
+class INVENTORY_API UINV_InventoryInteract : public UActorComponent
 {
 	GENERATED_BODY()
+
 public:
-	AINV_PlayerController();
-	virtual void Tick(float DeltaTime) override;
+	
+	UINV_InventoryInteract();
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventory();
 
 protected:
+	// Called when the game starts
 	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-private:
+	virtual void SetupInputComponent();
 	
+
+private:
 	void PrimaryInteract();
 	void CreateHUDWidget();
 	void TraceForItem();
 
+	TWeakObjectPtr<APlayerController> OwningPlayerController;
 	TWeakObjectPtr<UINV_InventoryComponent> InventoryComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
