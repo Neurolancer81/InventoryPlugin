@@ -73,7 +73,12 @@ void UINV_InventoryInteract::SetupInputComponent()
 
 void UINV_InventoryInteract::PrimaryInteract()
 {
-	UE_LOG(LogTemp, Display, TEXT("Primary Interact"));
+	if (!ThisActor.IsValid()) return;
+
+	UINV_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UINV_ItemComponent>();
+	if (!IsValid(ItemComponent) || !InventoryComponent.IsValid()) return;
+
+	InventoryComponent->TryAddItem(ItemComponent);
 }
 
 void UINV_InventoryInteract::CreateHUDWidget()
