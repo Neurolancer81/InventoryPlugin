@@ -2,6 +2,7 @@
 
 #include "InventoryManagement/Components/INV_InventoryComponent.h"
 #include "Items/INV_InventoryItem.h"
+#include "Items/Components/INV_ItemComponent.h"
 
 TArray<TObjectPtr<UINV_InventoryItem>> FINV_InventoryFastArray::GetAllItems() const
 {
@@ -49,8 +50,22 @@ void FINV_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedInd
 
 UINV_InventoryItem* FINV_InventoryFastArray::AddEntry(UINV_ItemComponent* ItemComponent)
 {
-	// TODO: Implement once item component has been changed
-	return nullptr;
+	check(OwnerComponent);
+
+	AActor* OwningActor = OwnerComponent->GetOwner();
+	check(OwningActor->HasAuthority());
+
+	UINV_InventoryComponent* InventoryComponent = Cast<UINV_InventoryComponent>(OwnerComponent);
+
+	if (!IsValid(InventoryComponent)) return nullptr;
+
+	FINV_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
+	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(OwningActor);
+
+	InventoryComponent->AddReplicatedSubObject(NewEntry.Item);
+	MarkItemDirty(NewEntry);
+	return NewEntry.Item;
+	
 }
 
 UINV_InventoryItem* FINV_InventoryFastArray::AddEntry(UINV_InventoryItem* Item)

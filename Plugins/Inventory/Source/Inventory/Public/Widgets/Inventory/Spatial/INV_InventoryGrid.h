@@ -8,8 +8,10 @@
 
 #include "INV_InventoryGrid.generated.h"
 
+class UINV_InventoryComponent;
 class UCanvasPanel;
 class UINV_GridSlot;
+class UINV_InventoryItem;
 /**
  * 
  */
@@ -22,7 +24,12 @@ public:
 	virtual void NativeOnInitialized() override;
 	EINV_ItemCategory GetItemCategory() const {return ItemCategory;}
 
+	UFUNCTION()
+	void AddItem(UINV_InventoryItem* Item);
+
 private:
+
+	TWeakObjectPtr<UINV_InventoryComponent> InventoryComponent;
 
 	void ConstructGrid();
 	
@@ -44,4 +51,6 @@ private:
 	int32 Columns;
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float TileSize;
+
+	bool MatchesCategory(const UINV_InventoryItem* Item) const;
 };

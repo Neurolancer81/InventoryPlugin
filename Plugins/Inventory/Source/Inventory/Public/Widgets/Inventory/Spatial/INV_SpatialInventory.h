@@ -18,6 +18,8 @@ class INVENTORY_API UINV_SpatialInventory : public UINV_InventoryBase
 	GENERATED_BODY()
 public:
 	virtual void NativeOnInitialized() override;
+
+	virtual FINV_SlotAvailabilityResult HasRoomForItem(UINV_ItemComponent* ItemComponent) const override;
 	
 private:
 

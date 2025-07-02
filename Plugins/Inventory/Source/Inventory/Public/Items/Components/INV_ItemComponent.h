@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Items/Manifest/INV_ItemManifest.h"
 #include "INV_ItemComponent.generated.h"
 
 
@@ -15,13 +16,21 @@ class INVENTORY_API UINV_ItemComponent : public UActorComponent
 public:
 	
 	UINV_ItemComponent();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	FINV_ItemManifest GetItemManifest() const { return ItemManifest; }
 
 	FString GetPickupMessage() const { return PickupMessage; }
+
+	
 
 protected:
 
 
 private:
+	UPROPERTY(Replicated, EditAnywhere, Category="Inventory")
+	FINV_ItemManifest ItemManifest;
+	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FString PickupMessage;
 };
