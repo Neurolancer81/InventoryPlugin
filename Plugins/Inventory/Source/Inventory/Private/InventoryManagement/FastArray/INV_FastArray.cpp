@@ -62,7 +62,7 @@ UINV_InventoryItem* FINV_InventoryFastArray::AddEntry(UINV_ItemComponent* ItemCo
 	FINV_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(OwningActor);
 
-	InventoryComponent->AddReplicatedSubObject(NewEntry.Item);
+	InventoryComponent->AddReplicatedSubObj(NewEntry.Item);
 	MarkItemDirty(NewEntry);
 	return NewEntry.Item;
 	

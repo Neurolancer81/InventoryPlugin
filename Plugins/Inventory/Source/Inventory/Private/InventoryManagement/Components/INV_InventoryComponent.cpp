@@ -89,7 +89,7 @@ void UINV_InventoryComponent::ToggleInventoryMenu()
 	}
 }
 
-void UINV_InventoryComponent::AddReplicatedSubObject(UObject* SubObject)
+void UINV_InventoryComponent::AddReplicatedSubObj(UObject* SubObject)
 {
 	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && IsValid(SubObject))
 	{

@@ -3,8 +3,10 @@
 
 #include "Inventory/Public/Widgets/Inventory/Spatial/INV_SpatialInventory.h"
 
+#include "Inventory.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "InventoryManagement/Utils/INV_InventoryStatics.h"
 #include "Widgets/Inventory/Spatial/INV_InventoryGrid.h"
 
 void UINV_SpatialInventory::NativeOnInitialized()
@@ -20,9 +22,22 @@ void UINV_SpatialInventory::NativeOnInitialized()
 
 FINV_SlotAvailabilityResult UINV_SpatialInventory::HasRoomForItem(UINV_ItemComponent* ItemComponent) const
 {
-	FINV_SlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-	return Result;
+	switch (UINV_InventoryStatics::GetItemCategoryFromItemComponent(ItemComponent))
+	{
+		case EINV_ItemCategory::Equippable:
+			return Grid_Equippables->HasRoomForItem(ItemComponent);
+
+		case EINV_ItemCategory::Consumable:
+			return Grid_Consumables->HasRoomForItem(ItemComponent);
+
+		case EINV_ItemCategory::Craftable:
+			return Grid_Craftables->HasRoomForItem(ItemComponent);
+
+		default:
+			UE_LOG(LogInventory, Error, TEXT("ItemComponent does not have a valid Item Category"));
+			return FINV_SlotAvailabilityResult();
+		
+	}
 }
 
 void UINV_SpatialInventory::ShowEquippables()

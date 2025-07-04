@@ -35,7 +35,7 @@ public:
 	void Server_AddStacksToItem(UINV_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	void ToggleInventoryMenu();
-	void AddReplicatedSubObject(UObject* SubObject);
+	void AddReplicatedSubObj(UObject* SubObject);
 
 	// Broadcast delegate when inventory item is added or removed
 	FInventoryItemChange OnItemAdded;
