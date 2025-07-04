@@ -3,9 +3,11 @@
 
 #include "InventoryManagement/Components/INV_InventoryComponent.h"
 
+#include "Items/Components/INV_ItemComponent.h"
 #include "Widgets/Inventory/InventoryBase/INV_InventoryBase.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "Net/UnrealNetwork.h"
+#include "Items/INV_InventoryItem.h"
 
 
 // Sets default values for this component's properties
@@ -27,6 +29,9 @@ void UINV_InventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 void UINV_InventoryComponent::TryAddItem(UINV_ItemComponent* ItemComponent)
 {
 	FINV_SlotAvailabilityResult Result = InventoryMenu->HasRoomForItem(ItemComponent);
+
+	UINV_InventoryItem* FoundItem = InventoryList.FindFirstItemByType(ItemComponent->GetItemManifest().GetItemType());
+	Result.Item = FoundItem;
 
 	if (Result.TotalRoomToFill == 0)
 	{
