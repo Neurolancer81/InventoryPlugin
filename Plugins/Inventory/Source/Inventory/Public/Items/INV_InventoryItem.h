@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Items/Manifest/INV_ItemManifest.h"
+#include "Runtime/Engine/Internal/VT/VirtualTextureVisualizationData.h"
 
 #include "INV_InventoryItem.generated.h"
 
@@ -26,10 +27,16 @@ public:
 
 	bool IsStackable() const;
 
+	int32 GetTotalStackCount() const {return TotalStackCount;}
+	void SetTotalStackCount(int32 StackCount) {TotalStackCount = StackCount;}
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category="Inventory", meta=(BaseStruct = "/Script/Inventory.INV_ItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
+
+	UPROPERTY(Replicated)
+	int32 TotalStackCount{0};
 	
 };
 

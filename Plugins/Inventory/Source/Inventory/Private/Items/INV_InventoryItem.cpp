@@ -11,6 +11,7 @@ void UINV_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, ItemManifest);
+	DOREPLIFETIME(ThisClass, TotalStackCount);
 }
 
 void UINV_InventoryItem::SetItemManifest(const FINV_ItemManifest& Manifest)

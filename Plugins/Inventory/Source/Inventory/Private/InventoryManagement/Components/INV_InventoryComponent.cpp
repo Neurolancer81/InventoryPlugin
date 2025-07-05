@@ -43,6 +43,7 @@ void UINV_InventoryComponent::TryAddItem(UINV_ItemComponent* ItemComponent)
 	{
 		// Add stacks to an item which already exists
 		// Update stack count
+		OnStackChange.Broadcast(Result);
 		Server_AddStacksToItem_Implementation(ItemComponent, Result.TotalRoomToFill, Result.Remainder);
 	}
 
@@ -57,18 +58,33 @@ void UINV_InventoryComponent::TryAddItem(UINV_ItemComponent* ItemComponent)
 void UINV_InventoryComponent::Server_AddNewItem_Implementation(UINV_ItemComponent* ItemComponent, int32 StackCount)
 {
 	UINV_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+	NewItem->SetTotalStackCount(StackCount);
 
 	if (GetOwner()->GetNetMode() == NM_ListenServer || GetOwner()->GetNetMode() == NM_Standalone)
 	{
 		OnItemAdded.Broadcast(NewItem);
 	}
 
-	// TODO: Tell the item component to destroy its owning actor
+	ItemComponent->PickedUp();
 }
 
 void UINV_InventoryComponent::Server_AddStacksToItem_Implementation(UINV_ItemComponent* ItemComponent, int32 StackCount,
 	int32 Remainder)
 {
+	const FGameplayTag& ItemType = ItemComponent ? ItemComponent->GetItemManifest().GetItemType() : FGameplayTag::EmptyTag;
+	UINV_InventoryItem* Item = InventoryList.FindFirstItemByType(ItemType);
+	if (!IsValid(Item)) return;
+
+	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
+
+	if (Remainder == 0)
+	{
+		ItemComponent->PickedUp();
+	}
+	else if (FINV_StackableFragment* StackableFragment = ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FINV_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder);
+	}
 }
 
 

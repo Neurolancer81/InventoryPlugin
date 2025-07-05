@@ -44,6 +44,7 @@ private:
 	TWeakObjectPtr<UINV_InventoryComponent> InventoryComponent;
 
 	void ConstructGrid();
+	
 	bool MatchesCategory(const UINV_InventoryItem* Item) const;
 	FINV_SlotAvailabilityResult HasRoomForItem(const UINV_InventoryItem* Item);
 	FVector2D GetDrawSize(const FINV_GridFragment* GridFragment) const;
@@ -78,6 +79,9 @@ private:
 	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimensions) const;
 	int32 DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize, const int32 AmountToFill, const UINV_GridSlot* GridSlot) const;
 	int32 GetStackAmount(const UINV_GridSlot* GridSlot) const;
+
+	UFUNCTION()
+	void AddStacks(const FINV_SlotAvailabilityResult& Result);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
 	EINV_ItemCategory ItemCategory;
