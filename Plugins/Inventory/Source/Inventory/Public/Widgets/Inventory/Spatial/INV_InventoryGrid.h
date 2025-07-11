@@ -8,6 +8,7 @@
 
 #include "INV_InventoryGrid.generated.h"
 
+class UINV_HoverItem;
 struct FGameplayTag;
 struct FINV_ImageFragment;
 struct FINV_GridFragment;
@@ -79,9 +80,18 @@ private:
 	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimensions) const;
 	int32 DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize, const int32 AmountToFill, const UINV_GridSlot* GridSlot) const;
 	int32 GetStackAmount(const UINV_GridSlot* GridSlot) const;
+	bool IsRightClick(const FPointerEvent& MouseEvent) const;
+	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
+	void PickUp(UINV_InventoryItem* ClickedInventoryItem, const int32 GridIndex);
+	void AssignHoverItem(UINV_InventoryItem* InventoryItem);
+	void AssignHoverItem(UINV_InventoryItem* InventoryItem, const int32 GridIndex, const int32 PrevGridIndex);
+	void RemoveItemFromGrid(const UINV_InventoryItem* Item, const int32 GridIndex);
 
 	UFUNCTION()
 	void AddStacks(const FINV_SlotAvailabilityResult& Result);
+
+	UFUNCTION()
+	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
 	EINV_ItemCategory ItemCategory;
@@ -108,5 +118,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float TileSize;
 
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UINV_HoverItem> HoverItemClass;
+
+	UPROPERTY()
+	TObjectPtr<UINV_HoverItem> HoverItem;
 	
 };

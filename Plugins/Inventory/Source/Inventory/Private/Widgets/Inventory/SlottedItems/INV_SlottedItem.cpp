@@ -2,9 +2,15 @@
 
 
 #include "Widgets/Inventory/SlottedItems/INV_SlottedItem.h"
-#include "Items/INV_InventoryItem.h"
+#include "Items/INV_InventoryItem.h" // This is here because the inventory item in this class is a weak pointer
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+
+FReply UINV_SlottedItem::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	OnSlottedItemClicked.Broadcast(GridIndex, MouseEvent);
+	return FReply::Handled();
+}
 
 void UINV_SlottedItem::SetInventoryItem(UINV_InventoryItem* Item)
 {
