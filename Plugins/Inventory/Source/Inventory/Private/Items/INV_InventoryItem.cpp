@@ -24,3 +24,8 @@ bool UINV_InventoryItem::IsStackable() const
 	const FINV_StackableFragment* Stackable = GetItemManifest().GetFragmentOfType<FINV_StackableFragment>();
 	return Stackable != nullptr;
 }
+
+bool UINV_InventoryItem::IsConsumable() const
+{
+	return GetItemManifest().GetItemCategory() == EINV_ItemCategory::Consumable;
+}

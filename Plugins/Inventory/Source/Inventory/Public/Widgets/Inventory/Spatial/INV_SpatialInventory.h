@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/InventoryBase/INV_InventoryBase.h"
 #include "INV_SpatialInventory.generated.h"
 
+class UCanvasPanel;
 class UButton;
 class UWidgetSwitcher;
 class UINV_InventoryGrid;
@@ -22,6 +23,9 @@ public:
 	virtual FINV_SlotAvailabilityResult HasRoomForItem(UINV_ItemComponent* ItemComponent) const override;
 	
 private:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCanvasPanel> CanvasPanel;
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher>  Switcher;

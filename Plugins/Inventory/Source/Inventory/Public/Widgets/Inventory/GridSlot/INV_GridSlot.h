@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "INV_GridSlot.generated.h"
 
+class UINV_ItemPopUp;
 class UINV_InventoryItem;
 class UImage;
 /**
@@ -55,6 +56,9 @@ public:
 	bool IsAvailable() const { return bAvailable; }
 	void SetAvailable(bool b) { bAvailable = b; }
 
+	void SetItemPopUp(UINV_ItemPopUp* PopUp);
+	UINV_ItemPopUp* GetItemPopUp() const;
+
 	/** Grid Slot Textures **/
 	void SetUnoccupiedTexture();
 	void SetOccupiedTexture();
@@ -68,10 +72,13 @@ public:
 
 private:
 
-	int32 TileIndex{INDEX_NONE};
-	int32 StackCount{0};
+	int32 TileIndex{INDEX_NONE};	
 	int32 UpperLeftIndex{INDEX_NONE};
-	bool bAvailable{true};	
+	int32 StackCount{0};
+	bool bAvailable{true};
+
+	TWeakObjectPtr<UINV_InventoryItem> InventoryItem;
+	TWeakObjectPtr<UINV_ItemPopUp> ItemPopUp;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
@@ -90,5 +97,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FSlateBrush Brush_GrayedOut;
 
-	TWeakObjectPtr<UINV_InventoryItem> InventoryItem;
+	UFUNCTION()
+	void OnItemPopUpDestruct(UUserWidget* Menu);
 };

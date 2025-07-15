@@ -8,6 +8,7 @@
 
 #include "INV_InventoryGrid.generated.h"
 
+class UINV_ItemPopUp;
 class UINV_HoverItem;
 struct FGameplayTag;
 struct FINV_ImageFragment;
@@ -40,6 +41,7 @@ public:
 
 	void ShowCursor();
 	void HideCursor();
+	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
 
 	UFUNCTION()
 	void AddItem(UINV_InventoryItem* Item);	
@@ -47,6 +49,7 @@ public:
 private:
 
 	TWeakObjectPtr<UINV_InventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UCanvasPanel> OwningCanvasPanel;
 
 	void ConstructGrid();
 	
@@ -112,15 +115,21 @@ private:
 	void ConsumeHoveredItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
 	bool ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
+	void CreateItemPopUp(const int32 GridIndex);
+
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UINV_ItemPopUp> ItemPopUpClass;
+	UPROPERTY()
+	TObjectPtr<UINV_ItemPopUp> ItemPopUp;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSubclassOf<UUserWidget> HiddenCursorWidgetClass;
-
 	UPROPERTY()
 	TObjectPtr<UUserWidget> VisibleCursorWidget;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UUserWidget> HiddenCursorWidgetClass;	
 	UPROPERTY()
 	TObjectPtr<UUserWidget> HiddenCursorWidget;
 
@@ -134,11 +143,19 @@ private:
 	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	
 	UFUNCTION()
-	void AddStacks(const FINV_SlotAvailabilityResult& Result);
-	
+	void AddStacks(const FINV_SlotAvailabilityResult& Result);	
 
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
+
+	UFUNCTION()
+	void OnPopUpMenuDrop(int32 Index);
+
+	UFUNCTION()
+	void OnPopUpMenuConsume(int32 Index);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
 	EINV_ItemCategory ItemCategory;
@@ -170,6 +187,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UINV_HoverItem> HoverItem;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FVector2D ItemPopUpOffset;
 
 	FINV_TileParameters TileParameters;
 	FINV_TileParameters LastTileParameters;
