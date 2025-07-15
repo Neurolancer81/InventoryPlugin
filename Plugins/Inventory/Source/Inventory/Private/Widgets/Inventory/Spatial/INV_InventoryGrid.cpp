@@ -260,6 +260,24 @@ void UINV_InventoryGrid::SwapWithHoverItem(UINV_InventoryItem* ClickedInventoryI
 	UpdateGridSlots(TempInventoryItem, ItemDropIndex, bTempIsStackable, TempStackCount);
 }
 
+bool UINV_InventoryGrid::ShouldSwapStackCounts(const int32 RoomInClickedSlot, const int32 HoveredStackCount,
+	const int32 MaxStackSize) const
+{
+	return RoomInClickedSlot == 0 && HoveredStackCount >= MaxStackSize;
+}
+
+void UINV_InventoryGrid::SwapStackCounts(const int32 ClickedStackCount, const int32 HoveredStackCount,
+	const int32 Index)
+{
+	UINV_GridSlot* GridSlot = GridSlots[Index];
+	GridSlot->SetStackCount(HoveredStackCount);
+
+	UINV_SlottedItem* ClickedSlottedItem = SlottedItems.FindChecked(Index);
+	ClickedSlottedItem->SetStackCount(HoveredStackCount);
+
+	HoverItem->SetStackCount(ClickedStackCount);
+}
+
 void UINV_InventoryGrid::ShowCursor()
 {
 	if (!IsValid(GetOwningPlayer())) return;
@@ -644,6 +662,43 @@ void UINV_InventoryGrid::AddStacks(const FINV_SlotAvailabilityResult& Result)
 	}
 }
 
+bool UINV_InventoryGrid::ShouldConsumeHoveredItemStacks(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const
+{
+	return RoomInClickedSlot >= HoveredStackCount;
+}
+
+void UINV_InventoryGrid::ConsumeHoveredItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount,
+	const int32 Index)
+{
+	const int32 NewClickedStackCount = ClickedStackCount + HoveredStackCount;
+	GridSlots[Index]->SetStackCount(NewClickedStackCount);
+	SlottedItems.FindChecked(Index)->SetStackCount(NewClickedStackCount);
+	ClearHoverItem();
+	ShowCursor();
+
+	const FINV_GridFragment* Fragment = GridSlots[Index]->GetInventoryItem()->GetItemManifest().GetFragmentOfType<FINV_GridFragment>();
+	const FIntPoint Dimensions = Fragment ? Fragment->GetGridSize() : FIntPoint(1,1	);
+	HighlightSlots(Index, Dimensions);
+}
+
+bool UINV_InventoryGrid::ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const
+{
+	return RoomInClickedSlot < HoveredStackCount;
+}
+
+void UINV_InventoryGrid::FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index)
+{
+	UINV_GridSlot* GridSlot = GridSlots[Index];
+	const int32 NewStackCount = GridSlot->GetStackCount() + FillAmount;
+	GridSlot->SetStackCount(NewStackCount);
+
+	UINV_SlottedItem* SlottedItem = SlottedItems.FindChecked(Index);
+	SlottedItem->SetStackCount(NewStackCount);
+
+	HoverItem->SetStackCount(Remainder);	
+	
+}
+
 void UINV_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
 	check(GridSlots.IsValidIndex(GridIndex));
@@ -659,9 +714,41 @@ void UINV_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 	if (IsSameStackable(ClickedInventoryItem))
 	{
 		// Should we swap their stack count?
+		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
+		const FINV_StackableFragment* StackableFragment = ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FINV_StackableFragment>();
+		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
+		const int32 RoomInClickedSlot = MaxStackSize - ClickedStackCount;
+		const int32 HoveredStackCount = HoverItem->GetStackCount();
+
+		// If the room in clicked slot == 0 and Hovered Stack Count < Max, then we should swap the two items
+		if (ShouldSwapStackCounts(RoomInClickedSlot, HoveredStackCount, MaxStackSize))
+		{
+			// Swap Stack Counts
+			SwapStackCounts(ClickedStackCount, HoveredStackCount, GridIndex);
+			return;
+		}
+		
 		// Should we consume the hover item?
+		// If room in clicked slot >= Hovered Stack Count
+		if (ShouldConsumeHoveredItemStacks(RoomInClickedSlot, HoveredStackCount))
+		{
+			ConsumeHoveredItemStacks(ClickedStackCount, HoveredStackCount, GridIndex);
+			return;
+		}
+		
 		// Should we fill in the stacks of the clicked item and not consume hovered item
-		// Is there no room in the clicked slot?
+		// If room in clicked slot < Hovered Stack Count
+		if (ShouldFillInStack(RoomInClickedSlot, HoveredStackCount))
+		{
+			FillInStack(RoomInClickedSlot, HoveredStackCount-RoomInClickedSlot, GridIndex);
+			return;
+		}
+		// Clicked Slot is already full, maybe play a sound?
+		if (RoomInClickedSlot == 0)
+		{
+			// TODO: Maybe play a sound?
+			return;	
+		}
 		return;
 	}
 

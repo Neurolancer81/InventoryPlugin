@@ -106,8 +106,12 @@ private:
 	UUserWidget* GetHiddenCursorWidget();
 	bool IsSameStackable(const UINV_InventoryItem* ClickedInventoryItem) const;
 	void SwapWithHoverItem(UINV_InventoryItem* ClickedInventoryItem, const int32 GridIndex);
-	
-
+	bool ShouldSwapStackCounts(const int32 RoomInClickedSlot, const int32 HoveredStackCount, const int32 MaxStackSize) const;
+	void SwapStackCounts(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
+	bool ShouldConsumeHoveredItemStacks(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
+	void ConsumeHoveredItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
+	bool ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
+	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;
@@ -131,6 +135,7 @@ private:
 	
 	UFUNCTION()
 	void AddStacks(const FINV_SlotAvailabilityResult& Result);
+	
 
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
