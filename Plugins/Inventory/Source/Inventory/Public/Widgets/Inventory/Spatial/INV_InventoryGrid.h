@@ -37,10 +37,12 @@ public:
 	FINV_SlotAvailabilityResult HasRoomForItem(const FINV_ItemManifest& Manifest);
 
 	void AddItemToIndices(const FINV_SlotAvailabilityResult& Result, UINV_InventoryItem* NewItem);
-	
+
+	void ShowCursor();
+	void HideCursor();
 
 	UFUNCTION()
-	void AddItem(UINV_InventoryItem* Item);
+	void AddItem(UINV_InventoryItem* Item);	
 
 private:
 
@@ -61,7 +63,7 @@ private:
 		const FINV_ImageFragment* ImageFragment,
 		const int32 Index) const;
 	void AddSlottedItemToCanvas(UINV_SlottedItem* SlottedItem, const FINV_GridFragment* GridFragment, const int32 Index) const;
-	void UpdateGridSlot(UINV_InventoryItem* NewItem, const int32 Index, bool bStackableItem, const int32 StackAmount);
+	void UpdateGridSlots(UINV_InventoryItem* NewItem, const int32 Index, bool bStackableItem, const int32 StackAmount);
 	static bool IsIndexClaimed(const TSet<int32>& CheckedIndices, const int32 Index);
 	bool HasRoomAtIndex(const UINV_GridSlot* GridSlot,
 		const FIntPoint& Dimensions,
@@ -98,7 +100,35 @@ private:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void ChangeHoverType(const int32 Index, const FIntPoint & Dimensions, EINV_GridSlotState GridSlotState);
+	void PutDownOnIndex(const int32 Index);
+	void ClearHoverItem();
+	UUserWidget* GetVisibleCursorWidget();
+	UUserWidget* GetHiddenCursorWidget();
+	bool IsSameStackable(const UINV_InventoryItem* ClickedInventoryItem) const;
+	void SwapWithHoverItem(UINV_InventoryItem* ClickedInventoryItem, const int32 GridIndex);
+	
 
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UUserWidget> HiddenCursorWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> VisibleCursorWidget;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> HiddenCursorWidget;
+
+	UFUNCTION()
+	void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+	
 	UFUNCTION()
 	void AddStacks(const FINV_SlotAvailabilityResult& Result);
 

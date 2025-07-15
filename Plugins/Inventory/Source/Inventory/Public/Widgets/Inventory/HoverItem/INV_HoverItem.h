@@ -20,7 +20,7 @@ class INVENTORY_API UINV_HoverItem : public UUserWidget
 	GENERATED_BODY()
 public:
 	void SetImageBrush(const FSlateBrush& Brush) const;
-	void SetStackCount(const int32 Count) const;
+	void SetStackCount(const int32 Count);
 
 	FGameplayTag GetItemType() const;
 
