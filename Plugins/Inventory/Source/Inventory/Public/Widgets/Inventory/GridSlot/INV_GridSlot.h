@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "VisualizeTexture.h"
 #include "Blueprint/UserWidget.h"
 #include "INV_GridSlot.generated.h"
 
@@ -33,7 +32,7 @@ public:
 	void SetGridSlotState(EINV_GridSlotState State) { GridSlotState = State; }
 
 	TWeakObjectPtr<UINV_InventoryItem> GetInventoryItem() const{ return InventoryItem; }
-	void SetInventoryItem(UINV_InventoryItem* Item) {InventoryItem = Item; }
+	void SetInventoryItem(UINV_InventoryItem* Item);
 
 	int32 GetStackCount() const { return StackCount; }
 	void SetStackCount(int32 Count) { StackCount = Count; }
@@ -54,12 +53,10 @@ public:
 
 private:
 
-	int32 TileIndex;
-	int32 StackCount;
+	int32 TileIndex{INDEX_NONE};
+	int32 StackCount{0};
 	int32 UpperLeftIndex{INDEX_NONE};
-	bool bAvailable;
-
-	TWeakObjectPtr<UINV_InventoryItem> InventoryItem;
+	bool bAvailable{true};	
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
@@ -78,5 +75,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FSlateBrush Brush_GrayedOut;
 
-
+	TWeakObjectPtr<UINV_InventoryItem> InventoryItem;
 };

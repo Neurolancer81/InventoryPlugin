@@ -2,8 +2,13 @@
 
 
 #include "Widgets/Inventory/GridSlot/INV_GridSlot.h"
-
+#include "Items/INV_InventoryItem.h"
 #include "Components/Image.h"
+
+void UINV_GridSlot::SetInventoryItem(UINV_InventoryItem* Item)
+{
+	InventoryItem = Item; 
+}
 
 void UINV_GridSlot::SetUnoccupiedTexture()
 {

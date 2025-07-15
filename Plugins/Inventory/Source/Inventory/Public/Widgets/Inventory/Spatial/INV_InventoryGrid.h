@@ -19,6 +19,7 @@ class UINV_InventoryComponent;
 class UCanvasPanel;
 class UINV_GridSlot;
 class UINV_InventoryItem;
+enum class EINV_GridSlotState: uint8;
 /**
  * 
  */
@@ -29,6 +30,7 @@ class INVENTORY_API UINV_InventoryGrid : public UUserWidget
 
 public:
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	EINV_ItemCategory GetItemCategory() const {return ItemCategory;}
 
 	FINV_SlotAvailabilityResult HasRoomForItem(const UINV_ItemComponent* ItemComponent);
@@ -86,6 +88,16 @@ private:
 	void AssignHoverItem(UINV_InventoryItem* InventoryItem);
 	void AssignHoverItem(UINV_InventoryItem* InventoryItem, const int32 GridIndex, const int32 PrevGridIndex);
 	void RemoveItemFromGrid(const UINV_InventoryItem* Item, const int32 GridIndex);
+	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
+	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	EINV_TileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	void OnTileParametersUpdated(const FINV_TileParameters& TileParameters);
+	FIntPoint CalculateStartingCoordinates(const FIntPoint& Coordinates, const FIntPoint& Dimensions, const EINV_TileQuadrant TileQuadrant) const;
+	FINV_SpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions);
+	bool CursorExitedCanvas(const FVector2D& BoundaryPosition, const FVector2D& BoundarySize, const FVector2D& Location);
+	void HighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void ChangeHoverType(const int32 Index, const FIntPoint & Dimensions, EINV_GridSlotState GridSlotState);
 
 	UFUNCTION()
 	void AddStacks(const FINV_SlotAvailabilityResult& Result);
@@ -123,5 +135,15 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UINV_HoverItem> HoverItem;
-	
+
+	FINV_TileParameters TileParameters;
+	FINV_TileParameters LastTileParameters;
+
+	// Index where an item would be placed if we click on a valid grid location
+	int32 ItemDropIndex{INDEX_NONE};
+	FINV_SpaceQueryResult CurrentSpaceQueryResult;
+	bool bMouseWithinCanvas;
+	bool bLastMouseWithinCanvas;
+	int32 LastHighlightedGridIndex;
+	FIntPoint LastHighlightedDimensions;
 };
