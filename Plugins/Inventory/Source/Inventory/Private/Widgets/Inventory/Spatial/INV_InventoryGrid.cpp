@@ -754,8 +754,14 @@ void UINV_InventoryGrid::DropItem()
 	ShowCursor();
 }
 
+bool UINV_InventoryGrid::HasHoverItem() const
+{
+	return IsValid(HoverItem);
+}
+
 void UINV_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
+	UINV_InventoryStatics::ItemUnHovered(InventoryComponent.Get());
 	check(GridSlots.IsValidIndex(GridIndex));
 	UINV_InventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem().Get();
 

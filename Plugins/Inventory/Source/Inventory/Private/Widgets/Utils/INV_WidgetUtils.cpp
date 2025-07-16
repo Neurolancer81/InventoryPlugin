@@ -37,3 +37,31 @@ bool UINV_WidgetUtils::IsWithinBounds(const FVector2D& BoundaryPosition, const F
 	return MousePosition.X >= BoundaryPosition.X && MousePosition.X <= (BoundaryPosition.X + WidgetSize.X) &&
 		MousePosition.Y >= BoundaryPosition.Y && MousePosition.Y <= (BoundaryPosition.Y + WidgetSize.Y);
 }
+
+FVector2D UINV_WidgetUtils::GetClampedWidgetPosition(const FVector2D& Boundary, const FVector2D& WidgetSize,
+	const FVector2D& MousePosition)
+{
+	FVector2D ClampedPosition = MousePosition;
+
+	// Adjust the h-pos so that widget stays within canvas boundary
+	if (MousePosition.X + WidgetSize.X > Boundary.X)
+	{
+		ClampedPosition.X = Boundary.X - WidgetSize.X;
+	}
+	if (MousePosition.X < 0)
+	{
+		ClampedPosition.X = 0;
+	}
+
+	// Adjust the v-pos so that widget stays within canvas boundary
+	if (MousePosition.Y + WidgetSize.Y > Boundary.Y)
+	{
+		ClampedPosition.Y = Boundary.Y - WidgetSize.Y;
+	}
+	if (MousePosition.Y < 0)
+	{
+		ClampedPosition.Y = 0;
+	}
+
+	return ClampedPosition;
+}

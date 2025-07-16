@@ -29,5 +29,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static bool IsWithinBounds(const FVector2D& BoundaryPosition, const FVector2D& WidgetSize, const FVector2D& MousePosition);
 
-	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static FVector2D GetClampedWidgetPosition(const FVector2D& Boundary, const FVector2D& WidgetSize, const FVector2D& MousePosition);
 };

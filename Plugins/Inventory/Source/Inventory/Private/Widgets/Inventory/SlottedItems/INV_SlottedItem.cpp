@@ -5,11 +5,27 @@
 #include "Items/INV_InventoryItem.h" // This is here because the inventory item in this class is a weak pointer
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "InventoryManagement/Utils/INV_InventoryStatics.h"
+#include "Inventory/Public/InventoryManagement/Components/INV_InventoryComponent.h"
 
 FReply UINV_SlottedItem::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	OnSlottedItemClicked.Broadcast(GridIndex, MouseEvent);
 	return FReply::Handled();
+}
+
+void UINV_SlottedItem::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	UINV_InventoryComponent* InventoryComponent = UINV_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	if (!InventoryComponent) return;
+	UINV_InventoryStatics::ItemHovered(InventoryComponent, InventoryItem.Get());
+}
+
+void UINV_SlottedItem::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	UINV_InventoryComponent* InventoryComponent = UINV_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	if (!InventoryComponent) return;
+	UINV_InventoryStatics::ItemUnHovered(InventoryComponent);
 }
 
 void UINV_SlottedItem::SetInventoryItem(UINV_InventoryItem* Item)

@@ -45,6 +45,8 @@ public:
 	void ToggleInventoryMenu();
 	void AddReplicatedSubObj(UObject* SubObject);
 	void SpawnDroppedItem(UINV_InventoryItem* Item, int32 StackCount);
+	UINV_InventoryBase* GetInventoryMenu() const {return InventoryMenu;}
+	
 
 	// Broadcast delegate when inventory item is added or removed
 	FInventoryItemChange OnItemAdded;
