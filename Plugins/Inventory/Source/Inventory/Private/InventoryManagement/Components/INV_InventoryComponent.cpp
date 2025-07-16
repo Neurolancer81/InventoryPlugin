@@ -97,6 +97,20 @@ void UINV_InventoryComponent::BeginPlay()
 	
 }
 
+void UINV_InventoryComponent::Server_DropItem_Implementation(UINV_InventoryItem* Item, int32 StackCount)
+{
+	const int32 NewStackCount = Item->GetTotalStackCount() - StackCount;
+	if (NewStackCount <= 0)
+	{
+		InventoryList.RemoveEntry(Item);
+	}
+	else
+	{
+		Item->SetTotalStackCount(NewStackCount);
+	}
+	SpawnDroppedItem(Item, StackCount);
+}
+
 void UINV_InventoryComponent::ToggleInventoryMenu()
 {
 	if (!bInventoryMenuOpen)
@@ -117,6 +131,24 @@ void UINV_InventoryComponent::AddReplicatedSubObj(UObject* SubObject)
 		AddReplicatedSubObject(SubObject);	
 	}	
 }
+
+void UINV_InventoryComponent::SpawnDroppedItem(UINV_InventoryItem* Item, int32 StackCount)
+{
+	const APawn* OwningPawn = OwningPlayerController->GetPawn();
+	FVector RotatedForward = OwningPawn->GetActorForwardVector();
+	RotatedForward = RotatedForward.RotateAngleAxis(FMath::FRandRange(DropSpawnAngleMin, DropSpawnAngleMax), FVector::UpVector);
+	FVector SpawnLocation = OwningPawn->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
+	SpawnLocation.Z -= RelativeSpawnLocation;
+	const FRotator SpawnRotation = FRotator::ZeroRotator;
+
+	FINV_ItemManifest& ItemManifest = Item->GetItemManifestMutable();
+	if (FINV_StackableFragment* StackableFragment = ItemManifest.GetFragmentOfTypeMutable<FINV_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(StackCount);
+	}
+	ItemManifest.SpawnPickUpActor(this, SpawnLocation, SpawnRotation);
+}
+
 
 void UINV_InventoryComponent::ConstructInventory()
 {

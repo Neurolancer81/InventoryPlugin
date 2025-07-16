@@ -36,8 +36,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UINV_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
+	UFUNCTION(Server, Reliable)
+	void Server_DropItem(UINV_InventoryItem* Item, int32 StackCount);
+
 	void ToggleInventoryMenu();
 	void AddReplicatedSubObj(UObject* SubObject);
+	void SpawnDroppedItem(UINV_InventoryItem* Item, int32 StackCount);
 
 	// Broadcast delegate when inventory item is added or removed
 	FInventoryItemChange OnItemAdded;
@@ -68,4 +72,19 @@ private:
 	bool bInventoryMenuOpen;
 	void OpenInventoryMenu();
 	void CloseInventoryMenu();
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMin = -85.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMax = 85.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMin = 10.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMax = 50.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float RelativeSpawnLocation = -70.f;
 };

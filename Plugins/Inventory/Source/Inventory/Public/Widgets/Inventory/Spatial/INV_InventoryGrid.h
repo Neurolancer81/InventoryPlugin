@@ -42,6 +42,7 @@ public:
 	void ShowCursor();
 	void HideCursor();
 	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
+	void DropItem();
 
 	UFUNCTION()
 	void AddItem(UINV_InventoryItem* Item);	
@@ -116,6 +117,7 @@ private:
 	bool ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 	void CreateItemPopUp(const int32 GridIndex);
+	
 
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
