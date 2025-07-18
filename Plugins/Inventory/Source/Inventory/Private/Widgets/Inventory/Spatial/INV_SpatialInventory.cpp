@@ -14,6 +14,9 @@
 #include "Widgets/Inventory/Spatial/INV_InventoryGrid.h"
 #include "Widgets/ItemDescription/INV_ItemDescription.h"
 #include "Items/Manifest/INV_ItemManifest.h"
+#include "Blueprint/WidgetTree.h"
+#include "Widgets/Inventory/GridSlot/INV_EquippedGridSlot.h"
+#include "Widgets/Inventory/HoverItem/INV_HoverItem.h"
 
 void UINV_SpatialInventory::NativeOnInitialized()
 {
@@ -28,6 +31,15 @@ void UINV_SpatialInventory::NativeOnInitialized()
 	Grid_Craftables->SetOwningCanvas(CanvasPanel);
 
 	ShowEquippables();
+
+	WidgetTree->ForEachWidget([this](UWidget* Widget)
+	{
+		if (UINV_EquippedGridSlot* Slot = Cast<UINV_EquippedGridSlot>(Widget); IsValid(Slot))
+		{
+			EquippedGridSlots.Add(Slot);
+			Slot->EquippedGridSlotClicked.AddDynamic(this, &ThisClass::EquippedGridSlotClicked);
+		}
+	});
 }
 
 void UINV_SpatialInventory::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -97,6 +109,12 @@ bool UINV_SpatialInventory::HasHoverItem() const
 	return Super::HasHoverItem();
 }
 
+UINV_HoverItem* UINV_SpatialInventory::GetHoverItem() const
+{
+	if (!ActiveGrid.IsValid()) return nullptr;
+	return ActiveGrid->GetHoverItem();
+}
+
 UINV_ItemDescription* UINV_SpatialInventory::GetItemDescription()
 {
 	if (!IsValid(ItemDescription))
@@ -120,6 +138,16 @@ void UINV_SpatialInventory::ShowConsumables()
 void UINV_SpatialInventory::ShowCraftables()
 {
 	SetActiveGrid(Grid_Craftables, Button_Craftables);
+}
+
+void UINV_SpatialInventory::EquippedGridSlotClicked(UINV_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& Tag)
+{
+	// Check to see if we can equip the hover item
+	if (!CanEquipHoverItem(EquippedGridSlot, Tag)) return;
+	
+	// Create an equipped Slotted Item and add it to the equipped grid slot
+	// Clear Hover item
+	// Tell Server we have equipped an item (potentially unequipping an item)
 }
 
 void UINV_SpatialInventory::DisableButton(UButton* Button)
@@ -154,4 +182,21 @@ void UINV_SpatialInventory::SetItemDescription(UINV_ItemDescription* Description
 		UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer()));
 
 	ItemDescriptionCPS->SetPosition(ClampedPosition);
+}
+
+bool UINV_SpatialInventory::CanEquipHoverItem(UINV_EquippedGridSlot* EquippedGridSlot,
+	const FGameplayTag& EquipmentTypeTag) const
+{
+	if (!IsValid(EquippedGridSlot) || EquippedGridSlot->GetInventoryItem().IsValid()) return false;
+
+	UINV_HoverItem* HoverItem = GetHoverItem();
+	if (!HoverItem) return false;
+
+	UINV_InventoryItem* HeldItem = HoverItem->GetInventoryItem();
+
+	return HasHoverItem() && IsValid(HeldItem) &&
+			!HoverItem->IsStackable() &&
+				HeldItem->GetItemManifest().GetItemCategory()==EINV_ItemCategory::Equippable &&
+					HeldItem->GetItemManifest().GetItemType().MatchesTag(EquipmentTypeTag);
+	
 }

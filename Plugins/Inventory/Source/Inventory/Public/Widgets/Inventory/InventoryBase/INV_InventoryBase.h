@@ -9,6 +9,7 @@
 
 class UINV_ItemComponent;
 class UINV_InventoryItem;
+class UINV_HoverItem;
 /**
  * 
  */
@@ -22,5 +23,6 @@ public:
 	virtual void OnItemHovered(UINV_InventoryItem* Item) {}
 	virtual void OnItemUnhovered() {}
 	virtual bool HasHoverItem() const {return false;}
+	virtual UINV_HoverItem* GetHoverItem() const {return nullptr;}
 	
 };

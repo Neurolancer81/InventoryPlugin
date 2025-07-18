@@ -7,6 +7,7 @@
 #include "Widgets/Utils/INV_WidgetUtils.h"
 #include "INV_InventoryStatics.generated.h"
 
+class UINV_HoverItem;
 class UINV_InventoryItem;
 class UINV_ItemComponent;
 enum class EINV_ItemCategory : uint8;
@@ -31,8 +32,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static void ItemHovered(UINV_InventoryComponent* InventoryComponent, UINV_InventoryItem* Item);
+	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static void ItemUnHovered(UINV_InventoryComponent* InventoryComponent);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static UINV_HoverItem* GetHoverItem(UINV_InventoryComponent* InventoryComponent);
 };
 
 template<typename T, typename FuncT>

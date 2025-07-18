@@ -40,3 +40,11 @@ void UINV_InventoryStatics::ItemUnHovered(UINV_InventoryComponent* InventoryComp
 
 	InventoryBase->OnItemUnhovered();
 }
+
+UINV_HoverItem* UINV_InventoryStatics::GetHoverItem(UINV_InventoryComponent* InventoryComponent)
+{
+	UINV_InventoryBase* InventoryBase = InventoryComponent->GetInventoryMenu();
+	if (!InventoryBase) return nullptr;
+
+	return InventoryBase->GetHoverItem();
+}

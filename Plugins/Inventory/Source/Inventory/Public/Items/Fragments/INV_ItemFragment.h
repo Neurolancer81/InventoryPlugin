@@ -206,3 +206,48 @@ struct FINV_ManaPotionFragment : public FINV_ConsumeModifier
 
 	virtual void OnConsume(UINV_InventoryComponent* InventoryComponent) override;
 };
+
+// Equipment based fragments
+
+//
+USTRUCT(BlueprintType)
+struct FINV_EquipModifier : public FINV_LabeledNumberFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(UINV_InventoryComponent* InventoryComponent) {}
+	virtual void OnUnEquip(UINV_InventoryComponent* InventoryComponent) {}
+
+	
+};
+
+USTRUCT(BlueprintType)
+struct FINV_StrengthModifier : public FINV_EquipModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(UINV_InventoryComponent* InventoryComponent) override;
+	virtual void OnUnEquip(UINV_InventoryComponent* InventoryComponent) override;
+
+	
+};
+
+
+USTRUCT(BlueprintType)
+struct FINV_EquipmentFragment : public FINV_InventoryItemFragment
+{
+	GENERATED_BODY()
+	bool bEquipped{false};
+	void OnEquip(UINV_InventoryComponent* InventoryComponent);
+	void OnUnEquip(UINV_InventoryComponent* InventoryComponent);
+	virtual void Assimilate(UINV_CompositeBase* Composite) const override;
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FINV_EquipModifier>> EquipModifiers;
+
+	
+
+	
+};

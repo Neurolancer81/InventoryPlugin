@@ -759,6 +759,11 @@ bool UINV_InventoryGrid::HasHoverItem() const
 	return IsValid(HoverItem);
 }
 
+UINV_HoverItem* UINV_InventoryGrid::GetHoverItem() const
+{
+	return HoverItem;
+}
+
 void UINV_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
 	UINV_InventoryStatics::ItemUnHovered(InventoryComponent.Get());

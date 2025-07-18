@@ -111,3 +111,50 @@ void FINV_ManaPotionFragment::OnConsume(UINV_InventoryComponent* InventoryCompon
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue,
 		FString::Printf(TEXT("Health Potion Consumed! Heal by: %f"),GetValue()));
 }
+
+void FINV_StrengthModifier::OnEquip(UINV_InventoryComponent* InventoryComponent)
+{
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		5.f,
+		FColor::Blue,
+		FString::Printf(TEXT("Item Equipped! Strength Increased by: %f"),GetValue()));
+}
+
+
+void FINV_StrengthModifier::OnUnEquip(UINV_InventoryComponent* InventoryComponent)
+{
+	GEngine->AddOnScreenDebugMessage(-1,
+		5.f,
+		FColor::Blue,
+		FString::Printf(TEXT("Item UnEquipped! Strength Reduced by: %f"),GetValue()));
+}
+
+void FINV_EquipmentFragment::OnEquip(UINV_InventoryComponent* InventoryComponent)
+{
+	if (bEquipped) return;
+	bEquipped = true;
+	for (auto& Modifier: EquipModifiers)
+	{
+		Modifier.GetMutable().OnEquip(InventoryComponent);
+	}
+}
+
+void FINV_EquipmentFragment::OnUnEquip(UINV_InventoryComponent* InventoryComponent)
+{
+	if (!bEquipped) return;
+	bEquipped = false;
+	for (auto& Modifier: EquipModifiers)
+	{
+		Modifier.GetMutable().OnUnEquip(InventoryComponent);
+	}
+}
+
+void FINV_EquipmentFragment::Assimilate(UINV_CompositeBase* Composite) const
+{
+	FINV_InventoryItemFragment::Assimilate(Composite);
+	for (const auto& Modifier: EquipModifiers)
+	{
+		Modifier.Get().Assimilate(Composite);
+	}
+}
