@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "Widgets/Composite/INV_Composite.h"
 #include "INV_ItemDescription.generated.h"
 
 class USizeBox;
@@ -11,7 +11,7 @@ class USizeBox;
  * 
  */
 UCLASS()
-class INVENTORY_API UINV_ItemDescription : public UUserWidget
+class INVENTORY_API UINV_ItemDescription : public UINV_Composite
 {
 	GENERATED_BODY()
 public:

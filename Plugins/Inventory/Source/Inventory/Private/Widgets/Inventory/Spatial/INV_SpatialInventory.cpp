@@ -10,8 +10,10 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetSwitcher.h"
 #include "InventoryManagement/Utils/INV_InventoryStatics.h"
+#include "Items/INV_InventoryItem.h"
 #include "Widgets/Inventory/Spatial/INV_InventoryGrid.h"
 #include "Widgets/ItemDescription/INV_ItemDescription.h"
+#include "Items/Manifest/INV_ItemManifest.h"
 
 void UINV_SpatialInventory::NativeOnInitialized()
 {
@@ -65,14 +67,16 @@ FINV_SlotAvailabilityResult UINV_SpatialInventory::HasRoomForItem(UINV_ItemCompo
 
 void UINV_SpatialInventory::OnItemHovered(UINV_InventoryItem* Item)
 {
+	const FINV_ItemManifest& Manifest = Item->GetItemManifest();
 	UINV_ItemDescription* ItemDescriptionWidget = GetItemDescription();
 	ItemDescriptionWidget->SetVisibility(ESlateVisibility::Collapsed);
 
 	GetOwningPlayer()->GetWorldTimerManager().ClearTimer(DescriptionTimer);
 
 	FTimerDelegate DescriptionTimerDelegate;
-	DescriptionTimerDelegate.BindLambda([this]()
+	DescriptionTimerDelegate.BindLambda([this, &Manifest, ItemDescriptionWidget]()
 	{
+		Manifest.AssimilateInventoryFragments(ItemDescriptionWidget);
 		GetItemDescription()->SetVisibility(ESlateVisibility::HitTestInvisible);
 	});
 	GetOwningPlayer()->GetWorldTimerManager().SetTimer(DescriptionTimer, DescriptionTimerDelegate, DescriptionTimerDelay, false);
