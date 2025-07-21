@@ -24,5 +24,6 @@ public:
 	virtual void OnItemUnhovered() {}
 	virtual bool HasHoverItem() const {return false;}
 	virtual UINV_HoverItem* GetHoverItem() const {return nullptr;}
+	virtual float GetTileSize() const {return 0;}
 	
 };

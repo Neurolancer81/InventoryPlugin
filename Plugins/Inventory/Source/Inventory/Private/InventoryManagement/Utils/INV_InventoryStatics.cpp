@@ -48,3 +48,12 @@ UINV_HoverItem* UINV_InventoryStatics::GetHoverItem(UINV_InventoryComponent* Inv
 
 	return InventoryBase->GetHoverItem();
 }
+
+UINV_InventoryBase* UINV_InventoryStatics::GetInventoryWidget(UINV_InventoryComponent* InventoryComponent)
+{
+	if (InventoryComponent!= nullptr)
+	{
+		return InventoryComponent->GetInventoryMenu();
+	}
+	return nullptr;		
+}

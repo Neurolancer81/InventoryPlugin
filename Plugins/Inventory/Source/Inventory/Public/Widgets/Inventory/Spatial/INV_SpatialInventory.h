@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/InventoryBase/INV_InventoryBase.h"
 #include "INV_SpatialInventory.generated.h"
 
+class UINV_EquippedSlottedItem;
 struct FGameplayTag;
 class UINV_EquippedGridSlot;
 class UINV_ItemDescription;
@@ -30,6 +31,7 @@ public:
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem() const override;
 	virtual UINV_HoverItem* GetHoverItem() const override;
+	virtual float GetTileSize() const override;
 	
 private:
 
@@ -85,11 +87,18 @@ private:
 	UFUNCTION()
 	void EquippedGridSlotClicked(UINV_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& Tag);
 
+	UFUNCTION()
+	void EquippedSlottedItemClicked(UINV_EquippedSlottedItem* SlottedItem);
+
 	void DisableButton(UButton* Button);
 	void SetActiveGrid(UINV_InventoryGrid* Grid, UButton* Button);
 	void SetItemDescription(UINV_ItemDescription* Description, UCanvasPanel* Canvas) const;
 	bool CanEquipHoverItem(UINV_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag) const;
-
+	UINV_EquippedGridSlot* FindSlotWithEquippedItem(UINV_InventoryItem* EquippedItem) const;
+	void ClearSlotOfItem(UINV_EquippedGridSlot* EquippedGridSlot);
+	void RemoveEquippedSlottedItem(UINV_EquippedSlottedItem* EquippedSlottedItem);
+	void MakeEquippedSlottedItem(UINV_EquippedSlottedItem* EquippedSlottedItem, UINV_EquippedGridSlot* EquippedGridSlot, UINV_InventoryItem* InventoryItem) const;
+	void BroadcastSlotClickedDelegates(UINV_InventoryItem* ItemToEquip, UINV_InventoryItem* ItemToUnequip) const;
 	TWeakObjectPtr<UINV_InventoryGrid> ActiveGrid;
 	
 	

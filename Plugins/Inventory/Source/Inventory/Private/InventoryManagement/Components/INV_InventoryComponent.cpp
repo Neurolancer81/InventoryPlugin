@@ -130,8 +130,24 @@ void UINV_InventoryComponent::Server_ConsumeItem_Implementation(UINV_InventoryIt
 	
 }
 
+void UINV_InventoryComponent::Server_EquipSlotClicked_Implementation(UINV_InventoryItem* ItemToEquip,
+	UINV_InventoryItem* ItemToUnequip)
+{
+	Multicast_EquipSlotClicked(ItemToEquip, ItemToUnequip);
+}
+
+
+void UINV_InventoryComponent::Multicast_EquipSlotClicked_Implementation(UINV_InventoryItem* ItemToEquip,
+	UINV_InventoryItem* ItemToUnequip)
+{
+	// Equipment component will listen to the following delegates
+	OnItemEquipped.Broadcast(ItemToEquip);
+	OnItemUnEquipped.Broadcast(ItemToUnequip);
+}
+
 void UINV_InventoryComponent::ToggleInventoryMenu()
 {
+	
 	if (!bInventoryMenuOpen)
 	{
 		OpenInventoryMenu();
@@ -141,6 +157,7 @@ void UINV_InventoryComponent::ToggleInventoryMenu()
 	{
 		CloseInventoryMenu();
 	}
+	OnInventoryMenuToggled.Broadcast(bInventoryMenuOpen);
 }
 
 void UINV_InventoryComponent::AddReplicatedSubObj(UObject* SubObject)

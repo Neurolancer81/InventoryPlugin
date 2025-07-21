@@ -7,6 +7,7 @@
 #include "INV_GridSlot.h"
 #include "INV_EquippedGridSlot.generated.h"
 
+class UOverlay;
 class UINV_EquippedSlottedItem;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UINV_EquippedGridSlot*, GridSlot,
                                              const FGameplayTag&, Tag);
@@ -27,7 +28,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	UINV_EquippedSlottedItem* OnItemEquipped(UINV_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize);
-
+	void SetEquippedSlottedItem(UINV_EquippedSlottedItem* Item) {EquippedSlottedItem = Item;}
 	FEquippedGridSlotClicked EquippedGridSlotClicked;
 
 private:
@@ -37,4 +38,13 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> Image_GrayedOutIcon;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UINV_EquippedSlottedItem> EquippedSlottedItemClass;
+
+	UPROPERTY()
+	TObjectPtr<UINV_EquippedSlottedItem> EquippedSlottedItem;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UOverlay> Overlay_Root;
 };
