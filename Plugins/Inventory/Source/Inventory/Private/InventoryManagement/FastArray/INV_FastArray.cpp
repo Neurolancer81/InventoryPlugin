@@ -53,7 +53,7 @@ UINV_InventoryItem* FINV_InventoryFastArray::AddEntry(UINV_ItemComponent* ItemCo
 {
 	check(OwnerComponent);
 
-	AActor* OwningActor = OwnerComponent->GetOwner();
+	AActor* OwningActor = OwnerComponent->GetOwner();	
 	check(OwningActor->HasAuthority());
 
 	UINV_InventoryComponent* InventoryComponent = Cast<UINV_InventoryComponent>(OwnerComponent);

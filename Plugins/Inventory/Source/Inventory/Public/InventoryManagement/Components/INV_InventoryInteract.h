@@ -38,7 +38,6 @@ private:
 	void CreateHUDWidget();
 	void TraceForItem();
 
-	TWeakObjectPtr<APlayerController> OwningPlayerController;
 	TWeakObjectPtr<UINV_InventoryComponent> InventoryComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
@@ -59,6 +58,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	double TraceLength;
 
+	// Cannot expose an ENum directly for changing in the editor with UPROPERTY. It muSt be wrapped in a
+	// TEnumAsByte<> for it to appear as a list.
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	TEnumAsByte<ECollisionChannel> TraceChannel;
 

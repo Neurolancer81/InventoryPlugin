@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Widgets/HUD/INV_HUDWidget.h"
 
+class UEnhancedInputLocalPlayerSubsystem;
 
 UINV_InventoryInteract::UINV_InventoryInteract()
 {
@@ -22,26 +23,14 @@ UINV_InventoryInteract::UINV_InventoryInteract()
 }
 
 
-// Called when the game starts
 void UINV_InventoryInteract::BeginPlay()
 {
 	Super::BeginPlay();
-	OwningPlayerController = Cast<APlayerController>(GetOwner());
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = 
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(OwningPlayerController->GetLocalPlayer());
-
-	if(IsValid(Subsystem))
-	{
-		for (UInputMappingContext* CurrentContext : DefaultIMCs)
-		{
-			Subsystem->AddMappingContext(CurrentContext, 0);
-		}
-	}
 
 	SetupInputComponent();
-
-	InventoryComponent = OwningPlayerController->FindComponentByClass<UINV_InventoryComponent>();
 	CreateHUDWidget();
+	InventoryComponent = GetOwner()->FindComponentByClass<UINV_InventoryComponent>();
+	
 }
 
 void UINV_InventoryInteract::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -54,25 +43,44 @@ void UINV_InventoryInteract::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UINV_InventoryInteract::SetupInputComponent()
 {
-	UEnhancedInputComponent* EnhancedInputComponent =
-		CastChecked<UEnhancedInputComponent>(OwningPlayerController->InputComponent);
+	const APlayerController* PC = Cast<APlayerController>(GetOwner());
+	if (!PC) return;
+	
+	if (const ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
+	{
+		if(UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(); IsValid(Subsystem))
+		{
+			for (const UInputMappingContext* CurrentContext : DefaultIMCs)
+			{
+				Subsystem->AddMappingContext(CurrentContext, 0);
+			}
+		}
+	}
+	
+	if(UEnhancedInputComponent* EnhancedInputComponent =
+		Cast<UEnhancedInputComponent>(PC->InputComponent))
+	{
+		EnhancedInputComponent->BindAction(PrimaryInteractAction,
+			ETriggerEvent::Started,
+			this,
+			&UINV_InventoryInteract::PrimaryInteract
+			);
 
-	EnhancedInputComponent->BindAction(PrimaryInteractAction,
-		ETriggerEvent::Started,
-		this,
-		&UINV_InventoryInteract::PrimaryInteract
-		);
-
-	EnhancedInputComponent->BindAction(ToggleInventoryAction,
-		ETriggerEvent::Started,
-		this,
-		&UINV_InventoryInteract::ToggleInventory
-		);
+		EnhancedInputComponent->BindAction(ToggleInventoryAction,
+			ETriggerEvent::Started,
+			this,
+			&UINV_InventoryInteract::ToggleInventory
+			);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inv_InteractionComponent: Owning PlayerController has no EnhancedInputComponent!"));
+	}
 	
 }
 
 void UINV_InventoryInteract::PrimaryInteract()
-{
+{	
 	if (!ThisActor.IsValid()) return;
 
 	UINV_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UINV_ItemComponent>();
@@ -83,9 +91,10 @@ void UINV_InventoryInteract::PrimaryInteract()
 
 void UINV_InventoryInteract::CreateHUDWidget()
 {
+	APlayerController* OwningPlayerController = Cast<APlayerController>(GetOwner());
 	if (!OwningPlayerController->IsLocalController()) return;
 
-	HUDWidget = CreateWidget<UINV_HUDWidget>(OwningPlayerController.Get(), HUDWidgetClass);
+	HUDWidget = CreateWidget<UINV_HUDWidget>(OwningPlayerController, HUDWidgetClass);
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->AddToViewport();
@@ -107,13 +116,15 @@ void UINV_InventoryInteract::TraceForItem()
 {
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
 
+	const APlayerController* OwningPlayerController = Cast<APlayerController>(GetOwner());
+
 	FVector2D ViewportSize = FVector2D::ZeroVector;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 	const FVector2D ViewportCenter = ViewportSize / 2.f;
 	FVector TraceStart;
 	FVector Forward;
 
-	if(!UGameplayStatics::DeprojectScreenToWorld(OwningPlayerController.Get(), ViewportCenter,
+	if(!UGameplayStatics::DeprojectScreenToWorld(OwningPlayerController, ViewportCenter,
 		TraceStart, Forward)) return;
 	const FVector TraceEnd = TraceStart + Forward * TraceLength;
 

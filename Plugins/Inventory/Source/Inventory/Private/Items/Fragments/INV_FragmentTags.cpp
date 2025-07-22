@@ -15,6 +15,8 @@ namespace FragmentTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SellValueFragment, "FragmentTags.SellValueFragment", "Sell Value Fragment")
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(RequiredLevelFragment, "FragmentTags.RequiredLevelFragment", "Required Level Fragment")
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EquipmentFragment, "FragmentTags.EquipmentFragment", "Equipment Fragment")
+
 	namespace StatMod
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(StatMod_1, "FragmentTags.StatMod.1", "Stat Mod 1")

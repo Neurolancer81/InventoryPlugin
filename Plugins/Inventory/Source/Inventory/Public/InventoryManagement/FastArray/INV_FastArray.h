@@ -71,11 +71,11 @@ private:
 	TObjectPtr<UActorComponent> OwnerComponent;
 };
 
-// Using type traits to tell the engine to delat serialize these structs
+// Using type traits to tell the engine to delta serialize these structs
 
 template<>
 struct TStructOpsTypeTraits<FINV_InventoryFastArray>: public TStructOpsTypeTraitsBase2<FINV_InventoryFastArray>
 {
-	enum {WithNetDelatSerializer = true};
+	enum {WithNetDeltaSerializer = true};
 };
 
