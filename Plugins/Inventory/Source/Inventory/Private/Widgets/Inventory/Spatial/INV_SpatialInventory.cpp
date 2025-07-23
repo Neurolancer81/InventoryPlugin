@@ -168,9 +168,6 @@ void UINV_SpatialInventory::EquippedGridSlotClicked(UINV_EquippedGridSlot* Equip
 	EquippedSlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this, &ThisClass::EquippedSlottedItemClicked);
 	
 	
-	// Clear Hover item
-	Grid_Equippables->ClearHoverItem();
-	
 	// Tell Server we have equipped an item (potentially unequipping an item)
 	UINV_InventoryComponent* InventoryComponent = UINV_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
 	check(IsValid(InventoryComponent));
@@ -183,6 +180,9 @@ void UINV_SpatialInventory::EquippedGridSlotClicked(UINV_EquippedGridSlot* Equip
 	{
 		InventoryComponent->OnItemEquipped.Broadcast(HoverItem->GetInventoryItem());
 	}
+
+	// Clear Hover item
+	Grid_Equippables->ClearHoverItem();
 	
 }
 

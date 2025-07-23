@@ -19,6 +19,13 @@ UINV_InventoryComponent::UINV_InventoryComponent() : InventoryList(this)
 	bInventoryMenuOpen = false;
 }
 
+// Called when the game starts
+void UINV_InventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	ConstructInventory();	
+}
+
 void UINV_InventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -44,14 +51,14 @@ void UINV_InventoryComponent::TryAddItem(UINV_ItemComponent* ItemComponent)
 		// Add stacks to an item which already exists
 		// Update stack count
 		OnStackChange.Broadcast(Result);
-		Server_AddStacksToItem_Implementation(ItemComponent, Result.TotalRoomToFill, Result.Remainder);
+		Server_AddStacksToItem(ItemComponent, Result.TotalRoomToFill, Result.Remainder);
 	}
 
 	else if (Result.TotalRoomToFill > 0)
 	{
 		// Item types does not yet exist
 		// Create a new one and update all pertinent slots
-		Server_AddNewItem_Implementation(ItemComponent, Result.bStackable? Result.TotalRoomToFill: 0);
+		Server_AddNewItem(ItemComponent, Result.bStackable? Result.TotalRoomToFill: 0);
 	}
 }
 
@@ -87,15 +94,6 @@ void UINV_InventoryComponent::Server_AddStacksToItem_Implementation(UINV_ItemCom
 	}
 }
 
-
-// Called when the game starts
-void UINV_InventoryComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	ConstructInventory();
-	
-}
 
 void UINV_InventoryComponent::Server_DropItem_Implementation(UINV_InventoryItem* Item, int32 StackCount)
 {

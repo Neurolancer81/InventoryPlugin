@@ -8,6 +8,7 @@
 
 #include "INV_ItemFragment.generated.h"
 
+class AINV_EquipActor;
 class UINV_InventoryComponent;
 class UINV_CompositeBase;
 
@@ -241,13 +242,28 @@ struct FINV_EquipmentFragment : public FINV_InventoryItemFragment
 	void OnEquip(UINV_InventoryComponent* InventoryComponent);
 	void OnUnEquip(UINV_InventoryComponent* InventoryComponent);
 	virtual void Assimilate(UINV_CompositeBase* Composite) const override;
+	virtual void Manifest() override;
+
+	AINV_EquipActor* SpawnAttachedActor(USkeletalMeshComponent* AttachMesh) const;
+	void DestroyAttachedActor() const;
+
+	FGameplayTag GetEquipmentType() const {return EquipmentType;}
+
+	void SetEquippedActor(AINV_EquipActor* EquipActor);
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = "Inventory", meta=(ExcludeBaseStruct))
+	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TArray<TInstancedStruct<FINV_EquipModifier>> EquipModifiers;
 
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<AINV_EquipActor> EquipActorClass = nullptr;
 	
+	TWeakObjectPtr<AINV_EquipActor> EquippedActor = nullptr;
 
-	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FName SocketAttachPoint{NAME_None};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FGameplayTag EquipmentType = FGameplayTag::EmptyTag;
 };

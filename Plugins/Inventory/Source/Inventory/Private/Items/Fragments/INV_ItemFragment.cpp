@@ -1,5 +1,6 @@
 ﻿#include "Items/Fragments/INV_ItemFragment.h"
 
+#include "EquipmentManagement/EquipActor/INV_EquipActor.h"
 #include "Widgets/Composite/INV_CompositeBase.h"
 #include "Widgets/Composite/INV_Leaf_Image.h"
 #include "Widgets/Composite/INV_Leaf_LabeledValue.h"
@@ -157,4 +158,37 @@ void FINV_EquipmentFragment::Assimilate(UINV_CompositeBase* Composite) const
 	{
 		Modifier.Get().Assimilate(Composite);
 	}
+}
+
+void FINV_EquipmentFragment::Manifest()
+{
+	FINV_InventoryItemFragment::Manifest();
+	for (auto& Modifier: EquipModifiers)
+	{
+		Modifier.GetMutable().Manifest();
+	}
+}
+
+AINV_EquipActor* FINV_EquipmentFragment::SpawnAttachedActor(USkeletalMeshComponent* AttachMesh) const
+{
+	if (!IsValid(EquipActorClass) || !AttachMesh) return nullptr;
+
+	AINV_EquipActor* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<AINV_EquipActor>(EquipActorClass);
+	if (!SpawnedActor) return nullptr;
+
+	SpawnedActor->AttachToComponent(AttachMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketAttachPoint);
+	return SpawnedActor;
+}
+
+void FINV_EquipmentFragment::DestroyAttachedActor() const
+{
+	if (EquippedActor.IsValid())
+	{
+		EquippedActor->Destroy();
+	}
+}
+
+void FINV_EquipmentFragment::SetEquippedActor(AINV_EquipActor* EquipActor)
+{
+	EquippedActor = EquipActor;
 }
