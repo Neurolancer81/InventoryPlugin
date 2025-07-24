@@ -13,12 +13,12 @@ class INVENTORY_API AINV_ProxyMesh : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this actor's properties
+public:	
 	AINV_ProxyMesh();
+	USkeletalMeshComponent* GetMesh() const { return ProxyMesh; }
 
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
 private:
@@ -29,6 +29,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> ProxyMesh;
+
+	FTimerHandle TimerForNextTick;
+	void DelayedInitializeOwner();
+	void DelayedInitialization();
 	
 
 };

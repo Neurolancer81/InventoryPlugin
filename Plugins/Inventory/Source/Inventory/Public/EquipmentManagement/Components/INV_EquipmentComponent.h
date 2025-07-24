@@ -25,6 +25,9 @@ public:
 
 	void SetOwningSkeletalMesh(USkeletalMeshComponent* OwningMesh);
 	void SetIsProxy(const bool Proxy) { bIsProxy = Proxy; }
+
+	void InitializeOwner(APlayerController* PlayerController);
+	
 protected:
 	void InitInventoryComponent();
 	void InitPlayerController();

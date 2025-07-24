@@ -16,7 +16,7 @@ class INVENTORY_API UINV_ItemDescription : public UINV_Composite
 	GENERATED_BODY()
 public:
 	FVector2D GetBoxSize() const;
-
+	virtual void SetVisibility(ESlateVisibility InVisibility) override; 
 
 private:
 

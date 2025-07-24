@@ -58,11 +58,11 @@ void UINV_InventoryComponent::TryAddItem(UINV_ItemComponent* ItemComponent)
 	{
 		// Item types does not yet exist
 		// Create a new one and update all pertinent slots
-		Server_AddNewItem(ItemComponent, Result.bStackable? Result.TotalRoomToFill: 0);
+		Server_AddNewItem(ItemComponent, Result.bStackable? Result.TotalRoomToFill: 0, Result.Remainder);
 	}
 }
 
-void UINV_InventoryComponent::Server_AddNewItem_Implementation(UINV_ItemComponent* ItemComponent, int32 StackCount)
+void UINV_InventoryComponent::Server_AddNewItem_Implementation(UINV_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
 {
 	UINV_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
 	NewItem->SetTotalStackCount(StackCount);
@@ -71,8 +71,14 @@ void UINV_InventoryComponent::Server_AddNewItem_Implementation(UINV_ItemComponen
 	{
 		OnItemAdded.Broadcast(NewItem);
 	}
-
-	ItemComponent->PickedUp();
+	if (Remainder == 0)
+	{
+		ItemComponent->PickedUp();
+	}
+	else if (FINV_StackableFragment* StackableFragment = ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FINV_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder);
+	}
 }
 
 void UINV_InventoryComponent::Server_AddStacksToItem_Implementation(UINV_ItemComponent* ItemComponent, int32 StackCount,
@@ -88,7 +94,7 @@ void UINV_InventoryComponent::Server_AddStacksToItem_Implementation(UINV_ItemCom
 	{
 		ItemComponent->PickedUp();
 	}
-	else if (FINV_StackableFragment* StackableFragment = ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FINV_StackableFragment>())
+	else if (FINV_StackableFragment* StackableFragment = ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FINV_StackableFragment>())
 	{
 		StackableFragment->SetStackCount(Remainder);
 	}

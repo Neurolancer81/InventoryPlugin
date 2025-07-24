@@ -33,7 +33,7 @@ public:
 	void TryAddItem(UINV_ItemComponent* ItemComponent);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddNewItem(UINV_ItemComponent* ItemComponent, int32 StackCount);
+	void Server_AddNewItem(UINV_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UINV_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
@@ -55,6 +55,7 @@ public:
 	void AddReplicatedSubObj(UObject* SubObject);
 	void SpawnDroppedItem(UINV_InventoryItem* Item, int32 StackCount);
 	UINV_InventoryBase* GetInventoryMenu() const {return InventoryMenu;}
+	bool IsInventoryMenuOpen() const {return bInventoryMenuOpen;}
 	
 
 	// Broadcast delegate when inventory item is added or removed

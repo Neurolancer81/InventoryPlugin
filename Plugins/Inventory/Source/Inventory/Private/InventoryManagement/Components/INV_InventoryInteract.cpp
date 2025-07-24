@@ -110,6 +110,14 @@ void UINV_InventoryInteract::ToggleInventory()
 		return;
 	}
 	InventoryComponent->ToggleInventoryMenu();
+	if (InventoryComponent->IsInventoryMenuOpen())
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		HUDWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
 }
 
 void UINV_InventoryInteract::TraceForItem()

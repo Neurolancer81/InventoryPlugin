@@ -20,6 +20,7 @@ public:
 
 	void InitItemManifest(FINV_ItemManifest CopyOfManifest);
 	FINV_ItemManifest GetItemManifest() const { return ItemManifest; }
+	FINV_ItemManifest& GetItemManifestMutable() { return ItemManifest; }
 
 	FString GetPickupMessage() const { return PickupMessage; }
 
