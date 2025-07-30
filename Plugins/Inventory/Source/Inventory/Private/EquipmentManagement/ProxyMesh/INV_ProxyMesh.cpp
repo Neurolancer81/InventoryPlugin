@@ -8,6 +8,7 @@
 #include "EquipmentManagement/Components/INV_EquipmentComponent.h"
 #include "GameFramework/Character.h"
 #include "InventoryManagement/Utils/INV_InventoryStatics.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 AINV_ProxyMesh::AINV_ProxyMesh()

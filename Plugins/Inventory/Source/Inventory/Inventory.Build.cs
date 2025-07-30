@@ -28,6 +28,7 @@ public class Inventory : ModuleRules
 				"Core",
 				"NetCore",
 				"StructUtils",
+				"EnhancedInput",
 				"GameplayTags"
 				
 				// ... add other public dependencies that you statically link with here ...
@@ -43,8 +44,10 @@ public class Inventory : ModuleRules
 				"Slate",
 				"SlateCore", 
 				"EnhancedInput",
+				"StructUtils",
 				"UMG",
 				"InputCore",
+				
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -54,6 +57,7 @@ public class Inventory : ModuleRules
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...
+				
 			}
 			);
 	}

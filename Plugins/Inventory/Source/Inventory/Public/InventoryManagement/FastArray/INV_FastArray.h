@@ -9,6 +9,7 @@ struct FGameplayTag;
 class UINV_ItemComponent;
 class UINV_InventoryComponent;
 class UINV_InventoryItem;
+class UActorComponent;
 
 /** A Struct holding a single inventory item which will be an element of the fast array **/
 USTRUCT(BlueprintType)
@@ -34,7 +35,7 @@ struct FINV_InventoryFastArray: public FFastArraySerializer
 	GENERATED_BODY()
 
 	FINV_InventoryFastArray() : OwnerComponent(nullptr) {}
-	FINV_InventoryFastArray(UActorComponent* InOwnerComponent) : OwnerComponent(InOwnerComponent) {}
+	FINV_InventoryFastArray(UActorComponent* InOwnerComponent) : OwnerComponent(InOwnerComponent) {};
 
 	// A helper function to extract an array of pointers to all the inventory items
 	TArray<TObjectPtr<UINV_InventoryItem>> GetAllItems() const;

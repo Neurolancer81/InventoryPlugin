@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Storage/Nodes/FileEntry.h"
 #include "StructUtils/InstancedStruct.h"
 
 

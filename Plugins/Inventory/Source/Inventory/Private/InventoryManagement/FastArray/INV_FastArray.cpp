@@ -3,7 +3,7 @@
 #include "InventoryManagement/Components/INV_InventoryComponent.h"
 #include "Items/INV_InventoryItem.h"
 #include "Items/Components/INV_ItemComponent.h"
-#include "Tests/ToolMenusTestUtilities.h"
+// #include "Tests/ToolMenusTestUtilities.h"
 
 TArray<TObjectPtr<UINV_InventoryItem>> FINV_InventoryFastArray::GetAllItems() const
 {

@@ -24,10 +24,10 @@ protected:
 private:
 	TWeakObjectPtr<USkeletalMeshComponent> SourceMesh;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category="Inventory")
 	TObjectPtr<UINV_EquipmentComponent> EquipmentComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category="Inventory")
 	TObjectPtr<USkeletalMeshComponent> ProxyMesh;
 
 	FTimerHandle TimerForNextTick;

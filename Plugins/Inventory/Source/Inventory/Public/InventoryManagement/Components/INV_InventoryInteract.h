@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,  Category="Inventory")
 	void ToggleInventory();
 
 protected:
